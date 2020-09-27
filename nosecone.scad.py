@@ -20,14 +20,16 @@ cut_plane = solid.rotate([0, -theta, 0])(upper_plane)
 cut_plane = solid.translate([Dmax3/2, 0, 0])(cut_plane)
 
 bulb = solid.sphere(d=Dmax3)
-bulb -= upper_plane
-bulb = solid.intersection()(bulb, cut_plane)
+bulb = solid.intersection()(upper_plane,bulb)
+# bulb = solid.intersection()(bulb, cut_plane)
 bulb_base = solid.cylinder(d=136.7, h=2*43.2, center=True)
+bulb_base += bulb
+bulb_base -= solid.cylinder(d=136.7/2, h=4*43.2, center=True)
 bulb_base = solid.translate([-Dmax3/2, 0, 0])(bulb_base)
 bulb_base = solid.rotate([0, -theta, 0])(bulb_base)
 bulb_base = solid.translate([Dmax3/2, 0, 0])(bulb_base)
-bulb += bulb_base
-bulb = solid.intersection()(bulb, lower_plane)
+# bulb += bulb_base
+bulb = solid.intersection()(bulb_base, lower_plane)
 
 total = solid.union()(
             cone3,
