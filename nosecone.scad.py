@@ -3,37 +3,41 @@
 import solid
 import numpy as np
 
-H3 = 230.9
-Dmin3 = 63.8
-Dmax3 = 140.7
-BIG = 10*H3
-theta = np.arctan(1/6)*180/np.pi
+BIG = 10000
+epsilon = 1/BIG
+resolution = 256
 
-cone3 = solid.cylinder(d1=Dmax3, d2=Dmin3, h=H3)
-cone3 -= solid.cylinder(d=63.5, h=3*H3, center=True)
-cone3 -= solid.cylinder(d=68.2, h=2*(H3-63.5), center=True)
+H = 230.9+93.1+13.9-16.6  # Distance between spheres
+
+Dmin = 2*16.6
+Dmax = 140.7
+theta = np.arctan((H)/((Dmax-Dmin)/2))*180/np.pi
+
+Dbase = 133.7
+Hbase = 43.2
+
+Dhollow = 68.2
+Hhollow = 150
 
 upper_plane = solid.cube(BIG, center=True)
-lower_plane = solid.translate([0,0,-BIG/2])(upper_plane)
 upper_plane = solid.translate([0,0,BIG/2])(upper_plane)
-cut_plane = solid.rotate([0, -theta, 0])(upper_plane)
-cut_plane = solid.translate([Dmax3/2, 0, 0])(cut_plane)
 
-bulb = solid.sphere(d=Dmax3)
-bulb = solid.intersection()(upper_plane,bulb)
-# bulb = solid.intersection()(bulb, cut_plane)
-bulb_base = solid.cylinder(d=136.7, h=2*43.2, center=True)
-bulb_base += bulb
-bulb_base -= solid.cylinder(d=136.7/2, h=4*43.2, center=True)
-bulb_base = solid.translate([-Dmax3/2, 0, 0])(bulb_base)
-bulb_base = solid.rotate([0, -theta, 0])(bulb_base)
-bulb_base = solid.translate([Dmax3/2, 0, 0])(bulb_base)
-# bulb += bulb_base
-bulb = solid.intersection()(bulb_base, lower_plane)
+ball_min = solid.sphere(d=Dmin,segments=resolution)
+ball_min = solid.translate([0,0,H])(ball_min)
+ball_max = solid.sphere(d=Dmax,segments=resolution)
+nosecone = solid.hull()(ball_min, ball_max)
+nosecone = solid.rotate([0,90-theta,0])(nosecone)
+nosecone = solid.intersection()(upper_plane, nosecone)
+base = solid.cylinder(d=Dbase, h=Hbase+epsilon,segments=resolution)
+base = solid.translate([0,0,-Hbase])(base)
+
+hollow = solid.cylinder(d=Dhollow, h=Hhollow*2, center=True, segments=resolution)
+hollow = solid.translate([20,0,0])(hollow)
 
 total = solid.union()(
-            cone3,
-            bulb,
+            base,
+            nosecone,
             )
+total -= hollow
 
 print(solid.scad_render(total))
