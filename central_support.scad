@@ -2,13 +2,12 @@
 
 difference() {
 	union() {
-		union() {
-			translate(v = [0, 0, 5]) {
-				cylinder($fn = 256, d1 = 194.8688000000, d2 = 3, h = 198.2000000000);
+		intersection() {
+			scale(v = [1, 1, 2]) {
+				sphere($fn = 256, d = 194.8688000000);
 			}
-			cylinder($fn = 256, d = 194.8688000000, h = 5);
-			translate(v = [0, 0, -50.8000000000]) {
-				cylinder($fn = 256, d = 187.9600000000, h = 50.8001000000);
+			translate(v = [0, 0, 5000.0000000000]) {
+				cube(center = true, size = 10000);
 			}
 		}
 	}

@@ -27,12 +27,19 @@ R_carve = 3*25.4
 R_carve = 140.7/2
 shift = .6*25.4
 
+upper_plane = solid.cube(BIG, center=True)
+upper_plane = solid.translate([0,0,BIG/2])(upper_plane)
+
 block = solid.cylinder(d1=Dmax, d2=Dmin, h=H-trans, segments=resolution)
 block = solid.translate([0,0,trans])(block)
 block += solid.cylinder(d=Dmax, h=trans, segments=resolution)
 lower = solid.cylinder(d=ID, h=id_insert+epsilon, segments=resolution)
 lower = solid.translate([0,0,-id_insert])(lower)
 block += lower
+
+block = solid.sphere(d=Dmax, segments=resolution)
+block = solid.scale([1,1,2])(block)
+block = solid.intersection()(block, upper_plane)
 
 carve = solid.cylinder(r=R_carve, h=3*H, center=True, segments=resolution)
 carve = solid.hull()(
