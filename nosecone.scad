@@ -51,9 +51,6 @@ difference() {
 	translate(v = [25, 0, 0]) {
 		cylinder($fn = 256, center = true, d = 68.2000000000, h = 300);
 	}
-	translate(v = [-25, 0, 0]) {
-		cylinder($fn = 256, center = true, d = 38.1000000000, h = 254.0000000000);
-	}
 	translate(v = [0, 0, -43.2000000000]) {
 		sphere($fn = 256, d = 123.7000000000);
 	}

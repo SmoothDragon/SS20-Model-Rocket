@@ -65,7 +65,7 @@ total = solid.union()(
             nosecone,
             )
 total -= hollow
-total -= smoke
+# total -= smoke
 total -= open_bottom
 
 print(solid.scad_render(total))
