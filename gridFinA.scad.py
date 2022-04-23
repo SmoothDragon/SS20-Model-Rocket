@@ -112,7 +112,7 @@ if __name__ == '__main__':
     diag_strut = rotate([0,0,60])(diag_strut)
     diag_strut = translate([(boxX-2*strut_thickness)/2,-12.7,-fin_height/2])(diag_strut)
     flat_strut = cube([12.7, strut_thickness, fin_height], center=True)
-    flat_strut = translate([39,0,0])(flat_strut)
+    flat_strut = translate([41,-strut_thickness/2,0])(flat_strut)
     final = union()(main_fin,
             translate([(boxX-strut_thickness)/2,0,0])(side_fin),
             translate([-(boxX-strut_thickness)/2,0,0])(side_fin),

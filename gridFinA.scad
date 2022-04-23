@@ -287,11 +287,11 @@ union() {
 			}
 		}
 	}
-	translate(v = [39, 0, 0]) {
+	translate(v = [41, -1.5000000000, 0]) {
 		cube(center = true, size = [12.7000000000, 3, 12.7000000000]);
 	}
 	rotate(a = [0, 180, 0]) {
-		translate(v = [39, 0, 0]) {
+		translate(v = [41, -1.5000000000, 0]) {
 			cube(center = true, size = [12.7000000000, 3, 12.7000000000]);
 		}
 	}
