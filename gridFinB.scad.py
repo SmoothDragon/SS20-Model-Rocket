@@ -5,6 +5,7 @@
 '''
 from solid import *
 from solid.utils import *
+import solid as sd
 
 def grid(fin_width, fin_spacing, fin_height, fin_length):
     slat = cube([fin_width, fin_length, fin_height], center=True)
@@ -65,16 +66,47 @@ def gridFinTwo(grid, strut_width, strut_height, strut_length, crossRail_length):
     block += rotate([0,180,0])(support)
     return block
 
+def gridFinB(fin_thickness, fin_height, fin_spacing):
+    block_x = 123.8
+    block_y = 124
+    block_z = 12.7
+    block = cube([block_x, block_y, block_z], center=True)
+    fin = cube([fin_thickness, 2*block_y, fin_height], center=True)
+    fins = union()(*[translate([i*fin_spacing,0,0])(fin) for i in range(-20,20)])
+    fins += rotate([0,0,90])(fins)
+    fins = rotate([0,0,45])(fins)
+    fins = sd.intersection()(fins, block)
+    block_hole = cube([block_x-2, block_y-4, block_z+1], center=True)
+    block_hole = sd.translate([0,1,0])(block_hole)
+    block -= block_hole
+    block += fins
+    diag_strut = cube([strut_thickness, 42.7, fin_height])
+    diag_strut = rotate([0,0,-150])(diag_strut)
+    diag_strut = translate([9.505,0,-fin_height/2])(diag_strut)
+    flat_strut = cube([19.1, strut_thickness, fin_height], center=True)
+    flat_strut = translate([0,-strut_thickness/2,0])(flat_strut)
+    block = union()(sd.translate([0,block_y/2,0])(block),
+            diag_strut,
+            rotate([0,180,0])(diag_strut),
+            flat_strut,
+            # rotate([0,180,0])(flat_strut),
+            )
+    return block
 
 if __name__ == '__main__':
-    fin_spacing = 25.4 * .3125 * .85
-    fin_thickness = 25.4 * .0625
-    fin_height = 25.4 * .4
-    strut_thickness = 25.4 * .093
-    strut_height = 25.4 * .4
+    fin_spacing = 8.2
+    fin_thickness = 1
+    fin_height = 12.7
+    strut_thickness = 3
+    strut_height = 12.7
     strut_width = 25.4 * .093
     strut_length = 25.4 * 5
     side_strut_length = 25.4 * 2.9375
+
+    final = gridFinB(fin_thickness, fin_height, fin_spacing)
+    fn = 64
+    print(scad_render(final, file_header=f'$fn={fn};'))
+    exit(0)
 
     extGrid = grid(fin_thickness/2, fin_spacing, fin_height, 5)
     fin2 = gridFinTwo(extGrid, strut_width, strut_height, strut_length, side_strut_length) 
