@@ -8,6 +8,7 @@ Make first grid fin for SS20 rocket.
 
 from solid import *
 from solid.utils import *
+import solid as sd
 
 gridBoxX = 121.4
 gridBoxY = 134.9
@@ -22,10 +23,18 @@ def grid(fin_width, fin_spacing, fin_height, n:'iterations'):
     return slats
 
 def gridFinOne(grid, strut_width, strut_height, strut_length, crossRail_length):
-    miniGridY = 1.0375*25.4
-    gridY = (4.75-1.0375-1.125)
-    strut_Yshift = 25.4 * (2.5-(gridY/2+1.125))
-    gridY *= 25.4
+    block_x = 134.9
+    block_y = 121.4
+    block_z = 12.7
+    # miniGridY = 1.0375*25.4
+    # gridY = (4.75-1.0375-1.125)
+    # strut_Yshift = 25.4 * (2.5-(gridY/2+1.125))
+    # gridY *= 25.4
+    block = cube([block_x, block_y, block_z], center=True)
+    block_hole = cube([block_x-2, block_y-4, block_z+1], center=True)
+    block_hole = sd.translate([0,1,0])(block_hole)
+    block -= block_hole
+    return block
     block = cube([crossRail_length, gridY, strut_height], center=True)
     extension = cube([1.05*25.4, miniGridY, strut_height], center=True)
     ext_top = cube([crossRail_length, strut_width, strut_height], center=True)
@@ -71,8 +80,59 @@ def gridFinOne(grid, strut_width, strut_height, strut_length, crossRail_length):
     block += rotate([0,180,0])(support)
     return block
 
+def gridFinA(fin_thickness, fin_height, fin_spacing):
+    block_x = 134.9
+    block_y = 121.4
+    block_z = 12.7
+    # miniGridY = 1.0375*25.4
+    # gridY = (4.75-1.0375-1.125)
+    # strut_Yshift = 25.4 * (2.5-(gridY/2+1.125))
+    # gridY *= 25.4
+    block = cube([block_x, block_y, block_z], center=True)
+    fin = cube([fin_thickness, 2*block_y, fin_height], center=True)
+    fins = union()(*[translate([i*fin_spacing,0,0])(fin) for i in range(-20,20)])
+    fins += rotate([0,0,90])(fins)
+    fins = rotate([0,0,45])(fins)
+    fins = sd.intersection()(fins, block)
+    block_hole = cube([block_x-2, block_y-4, block_z+1], center=True)
+    block_hole = sd.translate([0,1,0])(block_hole)
+    block -= block_hole
+    block += fins
+    lower = sd.cube([block_x, 12.7, block_z], center=True)
+    lower = sd.translate([0,-6.35,0])(lower)
+    diag_strut = cube([strut_thickness, 30, fin_height])
+    diag_strut = rotate([0,0,63])(diag_strut)
+    diag_strut = translate([block_x/2-1,-12.7,-fin_height/2])(diag_strut)
+    diag_strut = sd.intersection()(diag_strut, lower)
+    flat_strut = cube([12.7, strut_thickness, fin_height], center=True)
+    flat_strut = translate([41,-strut_thickness/2,0])(flat_strut)
+    lower_hole = sd.cube([block_x-2, 20, block_z+1], center=True)
+    lower_hole = sd.translate([0,-10,0])(lower_hole)
+    block = union()(sd.translate([0,block_y/2,0])(block),
+            diag_strut,
+            rotate([0,180,0])(diag_strut),
+            flat_strut,
+            rotate([0,180,0])(flat_strut),
+            lower - lower_hole,
+            )
+    return block
 
 if __name__ == '__main__':
+    fin_spacing = 11
+    fin_thickness = 1.2
+    fin_height = 12.7
+    strut_thickness = 3
+    strut_height = 25.4 * .4
+    strut_width = 25.4 * .093
+    strut_length = 25.4 * 5
+    side_strut_length = 25.4 * 2.9375
+    boxY = 121.4
+    boxX = 134.9
+
+    final = gridFinA(fin_thickness, fin_height, fin_spacing)
+    fn = 64
+    print(scad_render(final, file_header=f'$fn={fn};'))
+    exit(0)
     fin_spacing = 11
     fin_thickness = 1.2
     fin_height = 12.7
